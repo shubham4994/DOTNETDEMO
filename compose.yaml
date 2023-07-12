@@ -1,0 +1,24 @@
+version: '3'
+services:
+  myapp:
+    image: mcr.microsoft.com/dotnet/sdk:6.0
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      - HOME=/app
+      - ASPNETCORE_URLS=http://*:5000
+    ports:
+      - '5000:5000'
+    command: >
+      sh -c "groupadd -r sj && \
+             useradd -r -g sj -u 2000 -d /app shubham && \
+             chown shubham:sj /app && \
+             apt-get update && \
+             curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
+             apt-get -y install nodejs && \
+             su - shubham -c 'dotnet restore' && \
+             su - shubham -c 'dotnet build dotnet6.csproj -c Release' && \
+             su - shubham -c 'dotnet publish dotnet6.csproj -c Release -o publish' && \
+             cd publish && \
+             su - shubham -c 'cd publish && dotnet /app/publish/dotnet6.dll'"

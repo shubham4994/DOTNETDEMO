@@ -1,6 +1,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
+# Set up non-root user
+RUN useradd -m -s /bin/bash shubham
+USER shubham
+
 RUN apt-get update
 RUN curl -sL https://deb.nodesource.com/setup_16.x  | bash -
 RUN apt-get -y install nodejs
@@ -14,6 +18,9 @@ RUN dotnet publish "dotnet6.csproj" -c Release -o publish
 
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+
+# Use the existing non-root user
+USER shubham
 
 COPY --from=build /app/publish .
 ENV ASPNETCORE_URLS http://*:5000
