@@ -1,0 +1,7 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: dotnet-sj-configmap
+  namespace: bermtec
+data:
+  config_key: DB_HOST

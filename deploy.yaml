@@ -4,7 +4,12 @@ metadata:
   name: dotnet-java-sj
   namespace: bermtec
 spec:
-  replicas: 1
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   selector:
     matchLabels:
       app: dotnet-sj
@@ -13,8 +18,45 @@ spec:
       labels:
         app: dotnet-sj
     spec:
+      serviceAccountName: dotnet-sj-sa
       containers:
       - name: dotnet-sj-test
         image: shubham4994/donet-sj:1.0.0
         ports:
         - containerPort: 5000
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        livenessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: config_key_DB
+          valueFrom:
+            configMapKeyRef:
+              name: dotnet-sj-configmap
+              key: config_key
+        - name: secret_key
+          valueFrom:
+            secretKeyRef:
+              name: dotnet-sj-secret
+              key: secret_key
