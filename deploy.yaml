@@ -18,6 +18,23 @@ spec:
       labels:
         app: dotnet-sj
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - frontend
+          preferredDuringSchedulingIgnoredDuringExecution:  
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - frontend
       serviceAccountName: dotnet-sj-sa
       containers:
       - name: dotnet-sj-test
@@ -35,28 +52,3 @@ spec:
           exec:
             command:
             - ls
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-          periodSeconds: 10
-        readinessProbe:
-          exec:
-            command:
-            - ls
-          initialDelaySeconds: 5
-          timeoutSeconds: 2
-          successThreshold: 1
-          failureThreshold: 3
-          periodSeconds: 10
-        env:
-        - name: config_key_DB
-          valueFrom:
-            configMapKeyRef:
-              name: dotnet-sj-configmap
-              key: config_key
-        - name: secret_key
-          valueFrom:
-            secretKeyRef:
-              name: dotnet-sj-secret
-              key: secret_key
