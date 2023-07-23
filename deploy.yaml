@@ -23,18 +23,18 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: type
+              - key: agentpool
                 operator: In
                 values:
-                - frontend
+                - agentpool
           preferredDuringSchedulingIgnoredDuringExecution:  
           - weight: 1
             preference:
               matchExpressions:
-              - key: type
+              - key: agentpool
                 operator: In
                 values:
-                - frontend
+                - agentpool
       serviceAccountName: dotnet-sj-sa
       containers:
       - name: dotnet-sj-test
